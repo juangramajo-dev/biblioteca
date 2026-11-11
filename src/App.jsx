@@ -29,7 +29,7 @@ function App() {
             {/* TITULO */}
             <div className="seccion-titulo">
                 <h1 className="nombre-biblioteca">
-                    Biblioteca UTN
+                    Biblioteca de juancho
                 </h1>
 
                 <p className="subtitulo-biblioteca">
