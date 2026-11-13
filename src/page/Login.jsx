@@ -1,18 +1,31 @@
-import React, { useState } from 'react'
+import React, { useState } from 'react';
+import { apiRequest, guardarSesion } from '../api';
 
 // COMPONENTE LOGIN
 function Login({ onLoginSuccess }) {
 
   const [usuario, setUsuario] = useState('');
   const [clave, setClave] = useState('');
+  const [cargando, setCargando] = useState(false);
 
-  const manejarEnvio = (e) => {
+  const manejarEnvio = async (e) => {
     e.preventDefault();
+    setCargando(true);
 
-    if (usuario === "admin" && clave === "1234") {
-      onLoginSuccess();
-    } else {
-      alert("Usuario o contraseña incorrectos.");
+    try {
+      const data = await apiRequest('/auth/login', {
+        method: 'POST',
+        body: JSON.stringify({
+          nombre_usuario: usuario,
+          clave: clave,
+        }),
+      });
+      guardarSesion(data);
+      onLoginSuccess(data);
+    } catch (error) {
+      alert(error.message || "Usuario o contraseña incorrectos.");
+    } finally {
+      setCargando(false);
     }
   };
 
@@ -34,6 +47,7 @@ function Login({ onLoginSuccess }) {
             type="text"
             value={usuario}
             onChange={(e) => setUsuario(e.target.value)}
+            required
           />
 
         </div>
@@ -46,12 +60,13 @@ function Login({ onLoginSuccess }) {
             type="password"
             value={clave}
             onChange={(e) => setClave(e.target.value)}
+            required
           />
 
         </div>
 
-        <button type="submit" className="btn-login">
-          Aceptar
+        <button type="submit" className="btn-login" disabled={cargando}>
+          {cargando ? 'Ingresando...' : 'Aceptar'}
         </button>
 
       </form>
